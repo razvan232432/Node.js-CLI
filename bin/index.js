@@ -1,6 +1,8 @@
 const yargs = require('yargs');
 const chalk = require('chalk');  
 const boxen = require('boxen');
+const translate = require('@vitalets/google-translate-api');
+const figlet = require('figlet');
 
 // create options
 
@@ -21,3 +23,31 @@ translate(sentence, {to: language}).then(res => {console.log("\n" + boxen(chalk.
 {padding: 1, borderColor: 'green', dimBorder: true}) + "\n");}).catch(err => {                            
      console.error(err);  
  });
+
+ // console.log(yargs.argv);
+const argv = require('yargs/yargs')(process.argv.slice(2)).argv;
+
+if(argv.language == null && argv.l == null){
+    console.log(
+        chalk.yellow(
+          figlet.textSync('MyCLI', { horizontalLayout: 'full' })
+        )
+      );
+    yargs.showHelp();
+    return;
+}
+if(argv.sentence == null && argv.s == null){
+    yargs.showHelp();
+    return;
+}
+
+const language =  argv.l  || argv.language;
+
+const sentence =  argv.s  || argv.sentence;
+
+// console.log( language,sentence);
+translate(sentence, {to: language.toLowerCase()}).then(res => {
+    console.log("\n" + boxen(chalk.green( sentence + "\n\n" + res.text ), {padding: 1, borderColor: 'green', dimBorder: true}) + "\n");
+}).catch(err => {
+    console.error(err);
+});
